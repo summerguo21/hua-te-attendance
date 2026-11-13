@@ -223,9 +223,6 @@ async function handleAuth(request, env, body) {
 }
 
 async function handleGetData(request, env) {
-  if (!(await verifyToken(env, bearerToken(request)))) {
-    return json(request, { ok: false, error: "\u8bf7\u5148\u767b\u5f55\u8001\u5e08\u540e\u53f0" }, 401);
-  }
   const store = await readStore(env);
   return json(request, store);
 }
