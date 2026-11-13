@@ -1,0 +1,11 @@
+{
+  "name": "hua-te-attendance",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-13",
+  "kv_namespaces": [
+    {
+      "binding": "ATTENDANCE_KV",
+      "id": "3aacd0b576264744aeb48b8d2a58d566"
+    }
+  ]
+}
