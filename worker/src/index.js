@@ -281,6 +281,35 @@ export default {
     if (path === "/api/data" && request.method === "POST") {
       return handlePostData(request, env, body);
     }
-    return json(request, { ok: false, error: "\u4e0d\u652f\u6301\u7684\u64cd\u4f5c" }, 404);
+    if (request.method === "GET" || request.method === "HEAD") {
+      let html = await env.ATTENDANCE_KV.get("index-html");
+      const current = html && html.includes("function htApiBase");
+      if (!current) {
+        try {
+          const upstream = await fetch("https://raw.githubusercontent.com/summerguo21/hua-te-attendance/main/index.html");
+          if (upstream.ok) {
+            const fresh = await upstream.text();
+            if (fresh && fresh.includes("function htApiBase")) {
+              html = fresh;
+              await env.ATTENDANCE_KV.put("index-html", html);
+            }
+          }
+        } catch {
+          /* keep existing html */
+        }
+      }
+      if (html && !html.includes("function htApiBase")) html = null;
+      if (html) {
+        return new Response(request.method === "HEAD" ? null : html, {
+          status: 200,
+          headers: {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "no-store, max-age=0",
+            "X-Content-Type-Options": "nosniff",
+          },
+        });
+      }
+    }
+    return json(request, { ok: false, error: "不支持的操作" }, 404);
   },
 };
